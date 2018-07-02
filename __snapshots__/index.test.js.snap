@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ServerlessRespatPlugin addPattern() adds resources to serverless Resources 1`] = `
+Object {
+  "initial_resource1": Object {},
+  "initial_resource2": Object {},
+  "validPatternResource1": Object {
+    "valid_pattern_resource_prop1": "valid_pattern_resource_prop1",
+  },
+  "validPatternResource2": Object {
+    "valid_pattern_resource_prop2": "valid_pattern_resource_prop2",
+  },
+}
+`;
