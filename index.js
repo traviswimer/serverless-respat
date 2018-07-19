@@ -1,3 +1,5 @@
+const cloneDeep = require('clone-deep');
+
 class ServerlessRespatPlugin {
 	constructor(serverless, options) {
 		this.serverless = serverless;
@@ -8,14 +10,18 @@ class ServerlessRespatPlugin {
 		this.service.resources = this.service.resources || {};
 		this.service.resources.Resources = this.service.resources.Resources || {};
 
-		this.original_resources = this.cloneObject(this.service.resources.Resources);
+		this.original_resources = cloneDeep(this.service.resources.Resources);
+
+		this.plugin_config = this.service.custom['serverless-respat'] || {};
+		this.plugin_config.patterns = this.plugin_config.patterns || [];
+		this.plugin_config.prefix = this.plugin_config.prefix;
 
 		this.addPatterns = this.addPatterns.bind(this);
 		this.addPattern = this.addPattern.bind(this);
 
 		this.commands = {
 			respat: {
-				usage: 'Updates resources with changes specifed in "resource-patterns".',
+				usage: 'Adds resources defined by "resource-pattern" functions.',
 				lifecycleEvents: ['add_patterns']
 			}
 		};
@@ -27,35 +33,34 @@ class ServerlessRespatPlugin {
 		}
 	}
 
-	cloneObject(obj) {
-		return JSON.parse(JSON.stringify(obj));
-	}
-
 	addPatterns() {
-		let config = this.service.custom['serverless-respat'] || {};
-		config.patterns = config.patterns || [];
-
-		config.patterns.forEach(this.addPattern);
+		this.plugin_config.patterns.forEach(this.addPattern);
 	}
 
 	addPattern(pattern) {
-		let config = this.cloneObject(pattern.config) || {};
-		let serverless = this.cloneObject(this.serverless);
+		let pattern_config = cloneDeep(pattern.config) || {};
+		pattern_config.prefix = pattern_config.prefix || this.plugin_config.prefix;
 
 		if (!pattern.pattern_module) {
 			throw new Error('serverless-respat: All patterns must include a "pattern_module".');
 		}
-		let pattern_function = require(pattern.pattern_module);
-		let resources_to_add = pattern_function({config, serverless});
+
+		// Generate the Resources using the provided pattern
+		let pattern_function = pattern.pattern_module;
+		let resources_to_add = pattern_function({config: pattern_config}).resources;
 		let resource_names = Object.keys(resources_to_add);
 
+		// Check for Resource naming conflicts
 		resource_names.forEach((resource_name) => {
-			if (this.service.resources.Resources[resource_name]) {
+			// Serverless only allows alphanumeric resource names
+			let alphanumeric_name = resource_name.replace(/[^a-zA-Z0-9\d]/g, "");
+			
+			if (this.service.resources.Resources[alphanumeric_name]) {
 				throw new Error(`serverless-respat: Cannot add ${resource_name} to Resources, because it already exists.
 						This was caused by the following "resource-pattern":\r\n\r\n
 						${JSON.stringify(pattern, null, "\t")}`);
 			} else {
-				this.service.resources.Resources[resource_name] = resources_to_add[resource_name];
+				this.service.resources.Resources[alphanumeric_name] = resources_to_add[resource_name];
 			}
 		});
 	}

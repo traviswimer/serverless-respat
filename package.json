@@ -11,5 +11,8 @@
   "devDependencies": {
     "jest": "23.2.0",
     "serverless": "1.27.3"
+  },
+  "dependencies": {
+    "clone-deep": "4.0.0"
   }
 }
