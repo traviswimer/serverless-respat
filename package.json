@@ -1,7 +1,7 @@
 {
   "name": "serverless-respat",
   "version": "1.0.0",
-  "description": "",
+  "description": "Uses \"Resource Patterns\" to add resources for a specific goal.",
   "main": "index.js",
   "scripts": {
     "test": "jest"

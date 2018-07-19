@@ -47,14 +47,22 @@ class ServerlessRespatPlugin {
 
 		// Generate the Resources using the provided pattern
 		let pattern_function = pattern.pattern_module;
-		let resources_to_add = pattern_function({config: pattern_config}).resources;
+		let resources_to_add = pattern_function({
+			config: pattern_config,
+			serverless: this.serverless
+		}).resources;
+
+		if( !resources_to_add ){
+			throw new Error(`Invalid object returned by pattern_module.`);
+		}
+
 		let resource_names = Object.keys(resources_to_add);
 
 		// Check for Resource naming conflicts
 		resource_names.forEach((resource_name) => {
 			// Serverless only allows alphanumeric resource names
 			let alphanumeric_name = resource_name.replace(/[^a-zA-Z0-9\d]/g, "");
-			
+
 			if (this.service.resources.Resources[alphanumeric_name]) {
 				throw new Error(`serverless-respat: Cannot add ${resource_name} to Resources, because it already exists.
 						This was caused by the following "resource-pattern":\r\n\r\n

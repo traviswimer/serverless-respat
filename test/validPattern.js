@@ -1,10 +1,12 @@
-module.exports = function validPattern({config, serverless}){
+module.exports = function validPattern({config}) {
 	return {
-		validPatternResource1: {
-			"valid_pattern_resource_prop1": config.valid_pattern_resource_prop1
-		},
-		validPatternResource2: {
-			"valid_pattern_resource_prop2": config.valid_pattern_resource_prop2
-		},
+		resources: {
+			validPatternResource1: {
+				"valid_pattern_resource_prop1": config.valid_pattern_resource_prop1
+			},
+			validPatternResource2: {
+				"valid_pattern_resource_prop2": config.valid_pattern_resource_prop2
+			}
+		}
 	}
 }
