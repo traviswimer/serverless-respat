@@ -41,19 +41,19 @@ class ServerlessRespatPlugin {
 		let pattern_config = cloneDeep(pattern.config) || {};
 		pattern_config.prefix = pattern_config.prefix || this.plugin_config.prefix;
 
-		if (!pattern.pattern_module) {
-			throw new Error('serverless-respat: All patterns must include a "pattern_module".');
+		if (!pattern.pattern_function) {
+			throw new Error('serverless-respat: All patterns must include a "pattern_function".');
 		}
 
 		// Generate the Resources using the provided pattern
-		let pattern_function = pattern.pattern_module;
+		let pattern_function = pattern.pattern_function;
 		let resources_to_add = pattern_function({
 			config: pattern_config,
 			serverless: this.serverless
 		}).resources;
 
 		if( !resources_to_add ){
-			throw new Error(`Invalid object returned by pattern_module.`);
+			throw new Error(`Invalid object returned by pattern_function.`);
 		}
 
 		let resource_names = Object.keys(resources_to_add);
