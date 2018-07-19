@@ -1,6 +1,6 @@
 {
   "name": "serverless-respat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Add common \"Resource Pattern\" combinations to your Serverless-Framework config.",
   "main": "index.js",
   "scripts": {

@@ -14,14 +14,14 @@ Install:
 `npm install --save-dev serverless-respat`
 
 Add it to your plugins in your serverless config file:
-```
+```javascript
 "plugins": [
 	"serverless-respat"
 ]
 ```
 
 Add patterns to the "custom" object in your serverless config file:
-```
+```javascript
 "custom": {
 	"serverless-respat": {
 		prefix: "${self:service}-${opt:stage}",
@@ -45,7 +45,7 @@ As you can see, for each pattern, you pass a "pattern_function" and a "config". 
 ## Creating a Resource Pattern
 Resource Patterns are just simple functions that generate Serverless Resources configurations. As an overly-simplified example, lets assume we want a resource pattern that just creates an S3 bucket. To do that you would create a function like this:
 
-```
+```javascript
 module.exports = function s3BucketPattern({config, serverless}) {
 	let {
 		prefix,
@@ -70,7 +70,7 @@ module.exports = function s3BucketPattern({config, serverless}) {
 ```
 
 Then, to use this pattern, you would add this to your serverless config:
-```
+```javascript
 "custom": {
 	"serverless-respat": {
 		prefix: "${self:service}-${opt:stage}",
