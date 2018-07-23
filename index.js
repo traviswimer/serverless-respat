@@ -68,8 +68,9 @@ class ServerlessRespatPlugin {
 						This was caused by the following "resource-pattern":\r\n\r\n
 						${JSON.stringify(pattern, null, "\t")}`);
 			} else {
-				// Add the resource
-				this.service.resources.Resources[resource_name] = resources_to_add[resource_name];
+				// Add the resource (can be either an object or a function that returns an object)
+				let resource = resources_to_add[resource_name];
+				this.service.resources.Resources[resource_name] = typeof resource === 'function' ? resource(pattern_config) : resource;
 			}
 		});
 	}

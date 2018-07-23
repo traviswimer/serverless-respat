@@ -1,4 +1,5 @@
 const Serverless = require('serverless');
+const cloneDeep = require('clone-deep');
 
 const ServerlessRespatPlugin = require('./index');
 
@@ -50,6 +51,29 @@ describe('ServerlessRespatPlugin', () => {
 				}
 			});
 			expect(serverless.service.resources.Resources).toMatchSnapshot();
+		});
+
+		test('adds resources that are objects', () => {
+			let severless_copy = cloneDeep(serverless);
+
+			let fn_plugin = new ServerlessRespatPlugin(serverless);
+			fn_plugin.addPattern({
+				pattern_function: require("./test/validPattern"),
+				config: {
+					valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
+					valid_pattern_resource_prop2: "valid_pattern_resource_prop2"
+				}
+			});
+
+			let obj_plugin = new ServerlessRespatPlugin(severless_copy);
+			obj_plugin.addPattern({
+				pattern_function: require("./test/objectResource"),
+				config: {
+					valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
+					valid_pattern_resource_prop2: "valid_pattern_resource_prop2"
+				}
+			});
+			expect(serverless.service.resources.Resources).toEqual(severless_copy.service.resources.Resources);
 		});
 
 		test('throws error when resource name is not alphanumeric', () => {
