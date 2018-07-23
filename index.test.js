@@ -63,5 +63,17 @@ describe('ServerlessRespatPlugin', () => {
 				});
 			}).toThrow();
 		});
+
+		test('throws error when resource name already exists', () => {
+			let plugin = new ServerlessRespatPlugin(serverless);
+			expect(() => {
+				plugin.addPattern({
+					pattern_function: require("./test/existingResourceName"),
+					config: {
+						valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
+					}
+				});
+			}).toThrow();
+		});
 	});
 });
