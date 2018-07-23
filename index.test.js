@@ -51,5 +51,17 @@ describe('ServerlessRespatPlugin', () => {
 			});
 			expect(serverless.service.resources.Resources).toMatchSnapshot();
 		});
+
+		test('throws error when resource name is not alphanumeric', () => {
+			let plugin = new ServerlessRespatPlugin(serverless);
+			expect(() => {
+				plugin.addPattern({
+					pattern_function: require("./test/nonAlphanumericName"),
+					config: {
+						valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
+					}
+				});
+			}).toThrow();
+		});
 	});
 });

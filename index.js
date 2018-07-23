@@ -1,4 +1,5 @@
 const cloneDeep = require('clone-deep');
+const isAlphanumeric = require('is-alphanumeric');
 
 class ServerlessRespatPlugin {
 	constructor(serverless, options) {
@@ -47,12 +48,9 @@ class ServerlessRespatPlugin {
 
 		// Generate the Resources using the provided pattern
 		let pattern_function = pattern.pattern_function;
-		let resources_to_add = pattern_function({
-			config: pattern_config,
-			serverless: this.serverless
-		}).resources;
+		let resources_to_add = pattern_function({config: pattern_config, serverless: this.serverless}).resources;
 
-		if( !resources_to_add ){
+		if (!resources_to_add) {
 			throw new Error(`Invalid object returned by pattern_function.`);
 		}
 
@@ -61,14 +59,17 @@ class ServerlessRespatPlugin {
 		// Check for Resource naming conflicts
 		resource_names.forEach((resource_name) => {
 			// Serverless only allows alphanumeric resource names
-			let alphanumeric_name = resource_name.replace(/[^a-zA-Z0-9\d]/g, "");
+			if (!isAlphanumeric(resource_name)) {
+				throw new Error(`serverless-respat: Resource name "${resource_name}" cannot contain non-alphanumeric characters.`);
+			}
 
-			if (this.service.resources.Resources[alphanumeric_name]) {
+			if (this.service.resources.Resources[resource_name]) {
 				throw new Error(`serverless-respat: Cannot add ${resource_name} to Resources, because it already exists.
 						This was caused by the following "resource-pattern":\r\n\r\n
 						${JSON.stringify(pattern, null, "\t")}`);
 			} else {
-				this.service.resources.Resources[alphanumeric_name] = resources_to_add[resource_name];
+				// Add the resource
+				this.service.resources.Resources[resource_name] = resources_to_add[resource_name];
 			}
 		});
 	}
