@@ -16,7 +16,10 @@ class ServerlessRespatPlugin {
 
 		this.plugin_config = this.service.custom['serverless-respat'] || {};
 		this.plugin_config.patterns = this.plugin_config.patterns || [];
-		this.plugin_config.prefix = this.plugin_config.prefix;
+
+		if (!this.plugin_config.prefix) {
+			throw new Error(`serverless-respat: You must specify a "prefix".`);
+		}
 
 		this.addPatterns = this.addPatterns.bind(this);
 		this.addPattern = this.addPattern.bind(this);
@@ -58,6 +61,7 @@ class ServerlessRespatPlugin {
 		let default_config = cloneDeep(pattern.default_config || {});
 		let user_config = cloneDeep(user_pattern_settings.config) || {};
 		let pattern_config = deepMerge(default_config, user_config);
+		let resource_prefix = user_pattern_settings.resource_prefix || "";
 		pattern_config.prefix = pattern_config.prefix || this.plugin_config.prefix;
 
 		// Ensure required config properties have been provided
@@ -77,14 +81,16 @@ class ServerlessRespatPlugin {
 				throw new Error(`serverless-respat: Resource name "${resource_name}" cannot contain non-alphanumeric characters.`);
 			}
 
-			if (this.service.resources.Resources[resource_name]) {
+			let prefixed_resource_name = resource_prefix + pattern.name + resource_name;
+
+			if (this.service.resources.Resources[prefixed_resource_name]) {
 				throw new Error(`serverless-respat: Cannot add ${resource_name} to Resources, because it already exists.
 						This was caused by the following "resource-pattern":\r\n\r\n
 						${JSON.stringify(pattern, null, "\t")}`);
 			} else {
 				// Add the resource (can be either an object or a function that returns an object)
 				let resource = pattern.resources[resource_name];
-				this.service.resources.Resources[resource_name] = resource(pattern_config, this.serverless);
+				this.service.resources.Resources[prefixed_resource_name] = resource(pattern_config, this.serverless);
 			}
 		});
 	}

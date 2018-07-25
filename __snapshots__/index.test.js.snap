@@ -2,9 +2,9 @@
 
 exports[`ServerlessRespatPlugin addPattern() adds default config props 1`] = `
 Object {
-  "initial_resource1": Object {},
-  "initial_resource2": Object {},
-  "resourceUsingDefaults": Object {
+  "existingResourceNameinitialResource1": Object {},
+  "existingResourceNameinitialResource2": Object {},
+  "validPatternresourceUsingDefaults": Object {
     "resource_prop1": "default_value1",
     "resource_prop2": "default_value2",
   },
@@ -13,22 +13,35 @@ Object {
 
 exports[`ServerlessRespatPlugin addPattern() adds resources to serverless Resources 1`] = `
 Object {
-  "initial_resource1": Object {},
-  "initial_resource2": Object {},
-  "validPatternResource1": Object {
+  "existingResourceNameinitialResource1": Object {},
+  "existingResourceNameinitialResource2": Object {},
+  "validPatternvalidPatternResource1": Object {
     "valid_pattern_resource_prop1": "valid_pattern_resource_prop1",
   },
-  "validPatternResource2": Object {
+  "validPatternvalidPatternResource2": Object {
     "valid_pattern_resource_prop2": "valid_pattern_resource_prop2",
   },
 }
 `;
 
+exports[`ServerlessRespatPlugin addPattern() includes resource_prefix in resource_names 1`] = `
+Object {
+  "ResourcePrefixvalidPatternvalidPatternResource1": Object {
+    "valid_pattern_resource_prop1": undefined,
+  },
+  "ResourcePrefixvalidPatternvalidPatternResource2": Object {
+    "valid_pattern_resource_prop2": undefined,
+  },
+  "existingResourceNameinitialResource1": Object {},
+  "existingResourceNameinitialResource2": Object {},
+}
+`;
+
 exports[`ServerlessRespatPlugin addPattern() overrides default config with user config 1`] = `
 Object {
-  "initial_resource1": Object {},
-  "initial_resource2": Object {},
-  "resourceUsingDefaults": Object {
+  "existingResourceNameinitialResource1": Object {},
+  "existingResourceNameinitialResource2": Object {},
+  "validPatternresourceUsingDefaults": Object {
     "resource_prop1": "default_value1",
     "resource_prop2": "user_prop_value",
   },

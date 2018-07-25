@@ -17,12 +17,13 @@ describe('ServerlessRespatPlugin', () => {
 			service: {
 				resources: {
 					Resources: {
-						"initial_resource1": {},
-						"initial_resource2": {}
+						"existingResourceNameinitialResource1": {},
+						"existingResourceNameinitialResource2": {}
 					}
 				},
 				custom: {
 					'serverless-respat': {
+						prefix: "prefix",
 						patterns: []
 					}
 				}
@@ -40,6 +41,15 @@ describe('ServerlessRespatPlugin', () => {
 		}
 	});
 
+	describe('constructor()', () => {
+		test('throws error when no prefix is specified', () => {
+			delete serverless.service.custom['serverless-respat'].prefix;
+			expect(() => {
+				new ServerlessRespatPlugin(serverless);
+			}).toThrow();
+		});
+	});
+
 	describe('addPattern()', () => {
 		test('adds resources to serverless Resources', () => {
 			let plugin = new ServerlessRespatPlugin(serverless);
@@ -55,9 +65,13 @@ describe('ServerlessRespatPlugin', () => {
 
 		test('adds default config props', () => {
 			let plugin = new ServerlessRespatPlugin(serverless);
-			plugin.addPattern({
-				pattern: require("./test/withDefaults")
-			});
+			plugin.addPattern({pattern: require("./test/withDefaults")});
+			expect(serverless.service.resources.Resources).toMatchSnapshot();
+		});
+
+		test('includes resource_prefix in resource_names', () => {
+			let plugin = new ServerlessRespatPlugin(serverless);
+			plugin.addPattern({resource_prefix: "ResourcePrefix", pattern: require("./test/validPattern")});
 			expect(serverless.service.resources.Resources).toMatchSnapshot();
 		});
 
@@ -87,9 +101,7 @@ describe('ServerlessRespatPlugin', () => {
 		test('throws error when required prop is missing', () => {
 			let plugin = new ServerlessRespatPlugin(serverless);
 			expect(() => {
-				plugin.addPattern({
-					pattern: require("./test/requiredProps")
-				});
+				plugin.addPattern({pattern: require("./test/requiredProps")});
 			}).toThrow();
 		});
 
@@ -99,7 +111,7 @@ describe('ServerlessRespatPlugin', () => {
 				plugin.addPattern({
 					pattern: require("./test/nonAlphanumericName"),
 					config: {
-						valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
+						valid_pattern_resource_prop1: "valid_pattern_resource_prop1"
 					}
 				});
 			}).toThrow();
@@ -111,7 +123,7 @@ describe('ServerlessRespatPlugin', () => {
 				plugin.addPattern({
 					pattern: require("./test/existingResourceName"),
 					config: {
-						valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
+						valid_pattern_resource_prop1: "valid_pattern_resource_prop1"
 					}
 				});
 			}).toThrow();
