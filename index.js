@@ -84,9 +84,7 @@ class ServerlessRespatPlugin {
 			} else {
 				// Add the resource (can be either an object or a function that returns an object)
 				let resource = pattern.resources[resource_name];
-				this.service.resources.Resources[resource_name] = typeof resource === 'function'
-					? resource(pattern_config, this.serverless)
-					: resource;
+				this.service.resources.Resources[resource_name] = resource(pattern_config, this.serverless);
 			}
 		});
 	}
