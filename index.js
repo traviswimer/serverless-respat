@@ -88,9 +88,21 @@ class ServerlessRespatPlugin {
 						This was caused by the following "resource-pattern":\r\n\r\n
 						${JSON.stringify(pattern, null, "\t")}`);
 			} else {
-				// Add the resource (can be either an object or a function that returns an object)
+				// Create the resource object
 				let resource = pattern.resources[resource_name];
-				this.service.resources.Resources[prefixed_resource_name] = resource(pattern_config, this.serverless);
+				let built_resource = resource(pattern_config, this.serverless);
+
+				// Merge with any user-defined overrides
+				if (user_pattern_settings.overrides) {
+					let resource_overrides = user_pattern_settings.overrides[resource_name] || {};
+					resource_overrides = typeof resource_overrides === 'function'
+						? resource_overrides({resource: built_resource, config: pattern_config})
+						: resource_overrides;
+					built_resource = deepMerge(built_resource, resource_overrides);
+				}
+
+				// Add the resource
+				this.service.resources.Resources[prefixed_resource_name] = built_resource;
 			}
 		});
 	}

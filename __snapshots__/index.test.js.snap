@@ -47,3 +47,29 @@ Object {
   },
 }
 `;
+
+exports[`ServerlessRespatPlugin addPattern() overrides resource object with "overrides" 1`] = `
+Object {
+  "existingResourceNameinitialResource1": Object {},
+  "existingResourceNameinitialResource2": Object {},
+  "validPatternvalidPatternResource1": Object {
+    "valid_pattern_resource_prop1": "override_value",
+  },
+  "validPatternvalidPatternResource2": Object {
+    "valid_pattern_resource_prop2": "valid_pattern_resource_prop2",
+  },
+}
+`;
+
+exports[`ServerlessRespatPlugin addPattern() overrides resource object with "overrides" as a function 1`] = `
+Object {
+  "existingResourceNameinitialResource1": Object {},
+  "existingResourceNameinitialResource2": Object {},
+  "validPatternvalidPatternResource1": Object {
+    "valid_pattern_resource_prop1": "valid_pattern_resource_prop1__override_value__valid_pattern_resource_prop1",
+  },
+  "validPatternvalidPatternResource2": Object {
+    "valid_pattern_resource_prop2": "valid_pattern_resource_prop2",
+  },
+}
+`;

@@ -86,6 +86,42 @@ describe('ServerlessRespatPlugin', () => {
 			expect(serverless.service.resources.Resources).toMatchSnapshot();
 		});
 
+		test('overrides resource object with "overrides"', () => {
+			let plugin = new ServerlessRespatPlugin(serverless);
+			plugin.addPattern({
+				pattern: require("./test/validPattern"),
+				config: {
+					valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
+					valid_pattern_resource_prop2: "valid_pattern_resource_prop2"
+				},
+				overrides: {
+					validPatternResource1: {
+						valid_pattern_resource_prop1: "override_value"
+					}
+				}
+			});
+			expect(serverless.service.resources.Resources).toMatchSnapshot();
+		});
+
+		test('overrides resource object with "overrides" as a function', () => {
+			let plugin = new ServerlessRespatPlugin(serverless);
+			plugin.addPattern({
+				pattern: require("./test/validPattern"),
+				config: {
+					valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
+					valid_pattern_resource_prop2: "valid_pattern_resource_prop2"
+				},
+				overrides: {
+					validPatternResource1: ({resource, config}) => {
+						return {
+							valid_pattern_resource_prop1: resource.valid_pattern_resource_prop1 + "__override_value__" + config.valid_pattern_resource_prop1
+						}
+					}
+				}
+			});
+			expect(serverless.service.resources.Resources).toMatchSnapshot();
+		});
+
 		test('does not throw error when required prop are provided', () => {
 			let plugin = new ServerlessRespatPlugin(serverless);
 			expect(() => {
