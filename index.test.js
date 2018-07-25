@@ -44,7 +44,7 @@ describe('ServerlessRespatPlugin', () => {
 		test('adds resources to serverless Resources', () => {
 			let plugin = new ServerlessRespatPlugin(serverless);
 			plugin.addPattern({
-				pattern_function: require("./test/validPattern"),
+				pattern: require("./test/validPattern"),
 				config: {
 					valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
 					valid_pattern_resource_prop2: "valid_pattern_resource_prop2"
@@ -58,7 +58,7 @@ describe('ServerlessRespatPlugin', () => {
 
 			let fn_plugin = new ServerlessRespatPlugin(serverless);
 			fn_plugin.addPattern({
-				pattern_function: require("./test/validPattern"),
+				pattern: require("./test/validPattern"),
 				config: {
 					valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
 					valid_pattern_resource_prop2: "valid_pattern_resource_prop2"
@@ -67,7 +67,7 @@ describe('ServerlessRespatPlugin', () => {
 
 			let obj_plugin = new ServerlessRespatPlugin(severless_copy);
 			obj_plugin.addPattern({
-				pattern_function: require("./test/objectResource"),
+				pattern: require("./test/objectResource"),
 				config: {
 					valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
 					valid_pattern_resource_prop2: "valid_pattern_resource_prop2"
@@ -76,11 +76,51 @@ describe('ServerlessRespatPlugin', () => {
 			expect(serverless.service.resources.Resources).toEqual(severless_copy.service.resources.Resources);
 		});
 
+		test('adds default config props', () => {
+			let plugin = new ServerlessRespatPlugin(serverless);
+			plugin.addPattern({
+				pattern: require("./test/withDefaults")
+			});
+			expect(serverless.service.resources.Resources).toMatchSnapshot();
+		});
+
+		test('overrides default config with user config', () => {
+			let plugin = new ServerlessRespatPlugin(serverless);
+			plugin.addPattern({
+				pattern: require("./test/withDefaults"),
+				config: {
+					default_prop2: "user_prop_value"
+				}
+			});
+			expect(serverless.service.resources.Resources).toMatchSnapshot();
+		});
+
+		test('does not throw error when required prop are provided', () => {
+			let plugin = new ServerlessRespatPlugin(serverless);
+			expect(() => {
+				plugin.addPattern({
+					pattern: require("./test/requiredProps"),
+					config: {
+						required_prop_1: "some_value"
+					}
+				});
+			}).not.toThrow();
+		});
+
+		test('throws error when required prop is missing', () => {
+			let plugin = new ServerlessRespatPlugin(serverless);
+			expect(() => {
+				plugin.addPattern({
+					pattern: require("./test/requiredProps")
+				});
+			}).toThrow();
+		});
+
 		test('throws error when resource name is not alphanumeric', () => {
 			let plugin = new ServerlessRespatPlugin(serverless);
 			expect(() => {
 				plugin.addPattern({
-					pattern_function: require("./test/nonAlphanumericName"),
+					pattern: require("./test/nonAlphanumericName"),
 					config: {
 						valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
 					}
@@ -92,7 +132,7 @@ describe('ServerlessRespatPlugin', () => {
 			let plugin = new ServerlessRespatPlugin(serverless);
 			expect(() => {
 				plugin.addPattern({
-					pattern_function: require("./test/existingResourceName"),
+					pattern: require("./test/existingResourceName"),
 					config: {
 						valid_pattern_resource_prop1: "valid_pattern_resource_prop1",
 					}

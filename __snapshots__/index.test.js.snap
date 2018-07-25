@@ -1,5 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ServerlessRespatPlugin addPattern() adds default config props 1`] = `
+Object {
+  "initial_resource1": Object {},
+  "initial_resource2": Object {},
+  "resourceUsingDefaults": Object {
+    "resource_prop1": "default_value1",
+    "resource_prop2": "default_value2",
+  },
+}
+`;
+
 exports[`ServerlessRespatPlugin addPattern() adds resources to serverless Resources 1`] = `
 Object {
   "initial_resource1": Object {},
@@ -9,6 +20,17 @@ Object {
   },
   "validPatternResource2": Object {
     "valid_pattern_resource_prop2": "valid_pattern_resource_prop2",
+  },
+}
+`;
+
+exports[`ServerlessRespatPlugin addPattern() overrides default config with user config 1`] = `
+Object {
+  "initial_resource1": Object {},
+  "initial_resource2": Object {},
+  "resourceUsingDefaults": Object {
+    "resource_prop1": "default_value1",
+    "resource_prop2": "user_prop_value",
   },
 }
 `;

@@ -1,4 +1,5 @@
 const cloneDeep = require('clone-deep');
+const deepMerge = require('deepmerge');
 const isAlphanumeric = require('is-alphanumeric');
 
 class ServerlessRespatPlugin {
@@ -38,23 +39,36 @@ class ServerlessRespatPlugin {
 		this.plugin_config.patterns.forEach(this.addPattern);
 	}
 
-	addPattern(pattern) {
-		let pattern_config = cloneDeep(pattern.config) || {};
+	addPattern(user_pattern_settings) {
+		if (!user_pattern_settings.pattern) {
+			throw new Error('serverless-respat: Every object in the "patterns" array must include a "pattern" property.');
+		}
+
+		let pattern = user_pattern_settings.pattern;
+
+		// Ensure pattern is valid
+		if (!pattern.name) {
+			throw new Error('serverless-respat: Invalid resource pattern provided. All patterns must specify a "name".');
+		}
+		if (!pattern.resources) {
+			throw new Error(`serverless-respat: Invalid resource pattern provided. All patterns must specify "resources".`);
+		}
+
+		// Build config object
+		let default_config = cloneDeep(pattern.default_config || {});
+		let user_config = cloneDeep(user_pattern_settings.config) || {};
+		let pattern_config = deepMerge(default_config, user_config);
 		pattern_config.prefix = pattern_config.prefix || this.plugin_config.prefix;
 
-		if (!pattern.pattern_function) {
-			throw new Error('serverless-respat: All patterns must include a "pattern_function".');
-		}
+		// Ensure required config properties have been provided
+		let required_props = pattern.required_props || [];
+		required_props.forEach((prop_name) => {
+			if (typeof pattern_config[prop_name] === 'undefined') {
+				throw new Error(`serverless-respat: Required property "${prop_name}" missing from config for "${pattern.name}"`);
+			}
+		});
 
-		// Generate the Resources using the provided pattern
-		let pattern_function = pattern.pattern_function;
-		let resources_to_add = pattern_function({config: pattern_config, serverless: this.serverless}).resources;
-
-		if (!resources_to_add) {
-			throw new Error(`Invalid object returned by pattern_function.`);
-		}
-
-		let resource_names = Object.keys(resources_to_add);
+		let resource_names = Object.keys(pattern.resources);
 
 		// Check for Resource naming conflicts
 		resource_names.forEach((resource_name) => {
@@ -69,8 +83,10 @@ class ServerlessRespatPlugin {
 						${JSON.stringify(pattern, null, "\t")}`);
 			} else {
 				// Add the resource (can be either an object or a function that returns an object)
-				let resource = resources_to_add[resource_name];
-				this.service.resources.Resources[resource_name] = typeof resource === 'function' ? resource(pattern_config) : resource;
+				let resource = pattern.resources[resource_name];
+				this.service.resources.Resources[resource_name] = typeof resource === 'function'
+					? resource(pattern_config, this.serverless)
+					: resource;
 			}
 		});
 	}
