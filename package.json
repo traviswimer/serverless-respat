@@ -1,7 +1,14 @@
 {
   "name": "serverless-respat",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Add common \"Resource Pattern\" combinations to your Serverless-Framework config.",
+  "keywords": [
+    "serverless",
+    "respat",
+    "resource pattern",
+    "cloud",
+    "aws"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "jest"
