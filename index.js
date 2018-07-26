@@ -63,6 +63,7 @@ class ServerlessRespatPlugin {
 		let pattern_config = deepMerge(default_config, user_config);
 		let resource_prefix = user_pattern_settings.resource_prefix || "";
 		pattern_config.prefix = pattern_config.prefix || this.plugin_config.prefix;
+		pattern_config.pattern_name = pattern.name;
 
 		// Ensure required config properties have been provided
 		let required_props = pattern.required_props || [];
