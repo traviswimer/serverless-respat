@@ -16,8 +16,8 @@
   "author": "Travis Wimer",
   "license": "MIT",
   "devDependencies": {
-    "jest": "23.2.0",
-    "serverless": "1.27.3"
+    "jest": "23.4.1",
+    "serverless": "1.29.0"
   },
   "dependencies": {
     "clone-deep": "4.0.0",
